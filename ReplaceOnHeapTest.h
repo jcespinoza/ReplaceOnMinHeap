@@ -17,22 +17,43 @@ class ReplaceOnHeapTest {
 public:
     vector<int> replace(vector<int> min_heap, int replaced_value, int replacement)
     {
-        int* result = new int[min_heap.size()];
-        for (int index = 0; index < min_heap.size(); ++index) {
-            int element = min_heap[index];
-            if(element != replaced_value){
-                result[index] =  element;
-            }
+
+        int heapSize = min_heap.size();
+
+        int originalHeap[heapSize];
+
+        for (int index = 0; index < heapSize; ++index) {
+            originalHeap[index] = min_heap[index];
         }
-        insertOnHeap(result, min_heap.size(), replacement);
+
+        int transitionArray[heapSize];
+
+        for (int index = 0; index < heapSize; ++index) {
+            int element = min_heap[index];
+
+            transitionArray[index] = element == replaced_value ? replacement : element;
+        }
+
+        int resultingHeap[heapSize];
+        initializeTransitionArray(resultingHeap, heapSize);
+
+        for (int index = 0; index < heapSize; ++index) {
+            insertOnHeap(resultingHeap, index, transitionArray[index]);
+        }
 
         vector<int> resultVector;
-        for (int index = 0; index < min_heap.size(); ++index) {
-            int element = result[index];
+        for (int index = 0; index < heapSize; ++index) {
+            int element = resultingHeap[index];
             resultVector.push_back(element);
         }
 
         return resultVector;
+    }
+
+    void initializeTransitionArray(int *array, int size){
+        for (int index = 0; index < size; ++index) {
+            array[index] = -1;
+        }
     }
 
     void insertOnHeap(int* min_heap, int heapSize, int value)
